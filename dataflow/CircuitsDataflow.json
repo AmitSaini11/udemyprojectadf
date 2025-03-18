@@ -1,0 +1,80 @@
+{
+	"name": "CircuitsDataflow",
+	"properties": {
+		"folder": {
+			"name": "Stage1"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Circuits",
+						"type": "DatasetReference"
+					},
+					"name": "CircuitsDataflow"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "CircuitsSink",
+						"type": "DatasetReference"
+					},
+					"name": "sink1",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureDataLakeStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          circuitId as string,",
+				"          circuitRef as string,",
+				"          name as string,",
+				"          location as string,",
+				"          country as string,",
+				"          lat as string,",
+				"          lng as string,",
+				"          alt as string,",
+				"          url as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     enableCdc: true,",
+				"     mode: 'read',",
+				"     skipInitialLoad: false) ~> CircuitsDataflow",
+				"CircuitsDataflow select(mapColumn(",
+				"          circuit_id = circuitId,",
+				"          circuit_ref = circuitRef,",
+				"          name,",
+				"          location,",
+				"          country,",
+				"          latitude = lat,",
+				"          lngitude = lng,",
+				"          altitude = alt",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive(ingestion_date = currentTimestamp()) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
