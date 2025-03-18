@@ -1,0 +1,57 @@
+{
+	"name": "CircuitsTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SqlServer1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "circuitId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "circuitRef",
+				"type": "nvarchar"
+			},
+			{
+				"name": "name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "location",
+				"type": "nvarchar"
+			},
+			{
+				"name": "country",
+				"type": "nvarchar"
+			},
+			{
+				"name": "lat",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "lng",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "alt",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "url",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "circuits"
+		}
+	}
+}
