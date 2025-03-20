@@ -206,6 +206,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
+						"folderPath": "Circuit",
 						"fileSystem": "stage1"
 					},
 					"columnDelimiter": ",",
@@ -706,7 +707,11 @@
 						"     preCommands: [],",
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> sink1"
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('key',",
+						"          0,",
+						"          race_year",
+						"     )) ~> sink1"
 					]
 				}
 			},
@@ -969,7 +974,8 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2025-03-20T06:57:14Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/RaceDataFlow')]"
