@@ -30,13 +30,13 @@
 			],
 			"transformations": [
 				{
-					"name": "select1"
+					"name": "DropColumnName"
 				},
 				{
-					"name": "derivedColumn1"
+					"name": "AddNewColumn"
 				},
 				{
-					"name": "derivedColumn2"
+					"name": "RoundColumnValues"
 				}
 			],
 			"scriptLines": [
@@ -66,11 +66,11 @@
 				"          altitude = alt",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 derive(ingestion_date = currentTimestamp()) ~> derivedColumn1",
-				"derivedColumn1 derive(latitude = round(latitude,3),",
-				"          lngitude = round( lngitude,3)) ~> derivedColumn2",
-				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapOutputs: true) ~> DropColumnName",
+				"DropColumnName derive(ingestion_date = currentTimestamp()) ~> AddNewColumn",
+				"AddNewColumn derive(latitude = round(latitude,3),",
+				"          lngitude = round( lngitude,3)) ~> RoundColumnValues",
+				"RoundColumnValues sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     umask: 0022,",
 				"     preCommands: [],",
