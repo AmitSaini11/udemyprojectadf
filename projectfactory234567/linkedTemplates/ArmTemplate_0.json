@@ -289,6 +289,135 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/raceDataSet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "dbo.races",
+						"fileSystem": "rowdata"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "raceId",
+						"type": "String"
+					},
+					{
+						"name": "year",
+						"type": "String"
+					},
+					{
+						"name": "round",
+						"type": "String"
+					},
+					{
+						"name": "circuitId",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "date",
+						"type": "String"
+					},
+					{
+						"name": "time",
+						"type": "String"
+					},
+					{
+						"name": "url",
+						"type": "String"
+					},
+					{
+						"name": "fp1_date",
+						"type": "String"
+					},
+					{
+						"name": "fp1_time",
+						"type": "String"
+					},
+					{
+						"name": "fp2_date",
+						"type": "String"
+					},
+					{
+						"name": "fp2_time",
+						"type": "String"
+					},
+					{
+						"name": "fp3_date",
+						"type": "String"
+					},
+					{
+						"name": "fp3_time",
+						"type": "String"
+					},
+					{
+						"name": "quali_date",
+						"type": "String"
+					},
+					{
+						"name": "quali_time",
+						"type": "String"
+					},
+					{
+						"name": "sprint_date",
+						"type": "String"
+					},
+					{
+						"name": "sprint_time",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/raceDatasetSink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "race",
+						"fileSystem": "stage1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SqlServer1')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -435,13 +564,13 @@
 					],
 					"transformations": [
 						{
-							"name": "select1"
+							"name": "DropColumnName"
 						},
 						{
-							"name": "derivedColumn1"
+							"name": "AddNewColumn"
 						},
 						{
-							"name": "derivedColumn2"
+							"name": "RoundColumnValues"
 						}
 					],
 					"scriptLines": [
@@ -471,11 +600,11 @@
 						"          altitude = alt",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> select1",
-						"select1 derive(ingestion_date = currentTimestamp()) ~> derivedColumn1",
-						"derivedColumn1 derive(latitude = round(latitude,3),",
-						"          lngitude = round( lngitude,3)) ~> derivedColumn2",
-						"derivedColumn2 sink(allowSchemaDrift: true,",
+						"     skipDuplicateMapOutputs: true) ~> DropColumnName",
+						"DropColumnName derive(ingestion_date = currentTimestamp()) ~> AddNewColumn",
+						"AddNewColumn derive(latitude = round(latitude,3),",
+						"          lngitude = round( lngitude,3)) ~> RoundColumnValues",
+						"RoundColumnValues sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     umask: 0022,",
 						"     preCommands: [],",
@@ -489,6 +618,101 @@
 				"[concat(variables('factoryId'), '/datasets/Circuits')]",
 				"[concat(variables('factoryId'), '/datasets/CircuitsSink')]",
 				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RaceDataFlow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Stage1"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "raceDataSet",
+								"type": "DatasetReference"
+							},
+							"name": "Race"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "raceDatasetSink",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "SelectngAndRenamingColumn"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "cast1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          raceId as integer,",
+						"          year as integer,",
+						"          round as integer,",
+						"          circuitId as integer,",
+						"          name as string,",
+						"          date as string,",
+						"          time as string,",
+						"          url as string,",
+						"          fp1_date as string,",
+						"          fp1_time as string,",
+						"          fp2_date as string,",
+						"          fp2_time as string,",
+						"          fp3_date as string,",
+						"          fp3_time as string,",
+						"          quali_date as string,",
+						"          quali_time as string,",
+						"          sprint_date as string,",
+						"          sprint_time as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> Race",
+						"Race select(mapColumn(",
+						"          race_Id = raceId,",
+						"          race_year = year,",
+						"          round,",
+						"          circuit_Id = circuitId,",
+						"          name,",
+						"          date,",
+						"          time",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SelectngAndRenamingColumn",
+						"cast1 derive(race_timestamp = toTimestamp(concat(toString(date, 'yyyy-MM-dd'), ' ', toString(time, 'HH:mm:ss')), 'yyyy-MM-dd HH:mm:ss'),",
+						"          ingestion_date = currentTimestamp()) ~> derivedColumn1",
+						"SelectngAndRenamingColumn cast(output(",
+						"          date as date 'yyyy-MM-dd'",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/raceDataSet')]",
+				"[concat(variables('factoryId'), '/datasets/raceDatasetSink')]"
 			]
 		},
 		{
@@ -555,7 +779,8 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2025-03-19T09:28:43Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/CircuitsTable')]",
@@ -695,12 +920,59 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2025-03-19T09:28:43Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/TableNameDataSet')]",
 				"[concat(variables('factoryId'), '/datasets/SqlServerTable1')]",
 				"[concat(variables('factoryId'), '/datasets/DelimitedText1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RaceDataFlowPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "RaceDataFlow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "RaceDataFlow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"Race": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/RaceDataFlow')]"
 			]
 		},
 		{
@@ -743,7 +1015,8 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2025-03-19T09:28:43Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/CircuitsDataflow')]"
