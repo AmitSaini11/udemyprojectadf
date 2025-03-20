@@ -1,0 +1,89 @@
+{
+	"name": "DriverDataFlow",
+	"properties": {
+		"folder": {
+			"name": "Stage1"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DriversDataSet",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DriversSink",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "SelectingColumn"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          driverId as string,",
+				"          driverRef as string,",
+				"          number as string,",
+				"          code as string,",
+				"          forename as string,",
+				"          surname as string,",
+				"          dob as string,",
+				"          nationality as string,",
+				"          url as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 select(mapColumn(",
+				"          driver_id = driverId,",
+				"          driver_ref = driverRef,",
+				"          number,",
+				"          code,",
+				"          forename,",
+				"          surname,",
+				"          dob,",
+				"          nationality",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectingColumn",
+				"SelectingColumn derive(name = concat(forename,\" \",surname),",
+				"          Ingestion_date = currentTimestamp()) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          driver_id,",
+				"          driver_ref,",
+				"          number,",
+				"          code,",
+				"          name,",
+				"          dob,",
+				"          nationality,",
+				"          Ingestion_date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
