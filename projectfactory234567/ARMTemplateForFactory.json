@@ -109,6 +109,98 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ConstructorPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ConstructorDataFlow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "ConstructorDataFlow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/ConstructorDataFlow')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DriverPipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "DriverDataFlow",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DriverDataFlow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/DriverDataFlow')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/MutipleTablesFechPipeline')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -564,6 +656,83 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ConstructorsDataset')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "dbo.constructors",
+						"fileSystem": "rowdata"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "constructorId",
+						"type": "String"
+					},
+					{
+						"name": "constructorRef",
+						"type": "String"
+					},
+					{
+						"name": "name",
+						"type": "String"
+					},
+					{
+						"name": "nationality",
+						"type": "String"
+					},
+					{
+						"name": "url",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Constructorsink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Constructor",
+						"fileSystem": "stage1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DelimitedText1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -587,6 +756,228 @@
 							"type": "Expression"
 						},
 						"fileSystem": "rowdata"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DriversDataSet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "dbo.drivers",
+						"fileSystem": "rowdata"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "driverId",
+						"type": "String"
+					},
+					{
+						"name": "driverRef",
+						"type": "String"
+					},
+					{
+						"name": "number",
+						"type": "String"
+					},
+					{
+						"name": "code",
+						"type": "String"
+					},
+					{
+						"name": "forename",
+						"type": "String"
+					},
+					{
+						"name": "surname",
+						"type": "String"
+					},
+					{
+						"name": "dob",
+						"type": "String"
+					},
+					{
+						"name": "nationality",
+						"type": "String"
+					},
+					{
+						"name": "url",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DriversSink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Drivers",
+						"fileSystem": "stage1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ResultDataSet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "dbo.results",
+						"fileSystem": "rowdata"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "resultId",
+						"type": "String"
+					},
+					{
+						"name": "raceId",
+						"type": "String"
+					},
+					{
+						"name": "driverId",
+						"type": "String"
+					},
+					{
+						"name": "constructorId",
+						"type": "String"
+					},
+					{
+						"name": "number",
+						"type": "String"
+					},
+					{
+						"name": "grid",
+						"type": "String"
+					},
+					{
+						"name": "position",
+						"type": "String"
+					},
+					{
+						"name": "positionText",
+						"type": "String"
+					},
+					{
+						"name": "positionOrder",
+						"type": "String"
+					},
+					{
+						"name": "points",
+						"type": "String"
+					},
+					{
+						"name": "laps",
+						"type": "String"
+					},
+					{
+						"name": "time",
+						"type": "String"
+					},
+					{
+						"name": "milliseconds",
+						"type": "String"
+					},
+					{
+						"name": "fastestLap",
+						"type": "String"
+					},
+					{
+						"name": "rank",
+						"type": "String"
+					},
+					{
+						"name": "fastestLapTime",
+						"type": "String"
+					},
+					{
+						"name": "fastestLapSpeed",
+						"type": "String"
+					},
+					{
+						"name": "statusId",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ResultsSink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"folderPath": "Results",
+						"fileSystem": "stage1"
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
@@ -930,105 +1321,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/RaceDataFlow')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"folder": {
-					"name": "Stage1"
-				},
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "raceDataSet",
-								"type": "DatasetReference"
-							},
-							"name": "Race"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "raceDatasetSink",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "SelectngAndRenamingColumn"
-						},
-						{
-							"name": "derivedColumn1"
-						},
-						{
-							"name": "cast1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          raceId as integer,",
-						"          year as integer,",
-						"          round as integer,",
-						"          circuitId as integer,",
-						"          name as string,",
-						"          date as string,",
-						"          time as string,",
-						"          url as string,",
-						"          fp1_date as string,",
-						"          fp1_time as string,",
-						"          fp2_date as string,",
-						"          fp2_time as string,",
-						"          fp3_date as string,",
-						"          fp3_time as string,",
-						"          quali_date as string,",
-						"          quali_time as string,",
-						"          sprint_date as string,",
-						"          sprint_time as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> Race",
-						"Race select(mapColumn(",
-						"          race_Id = raceId,",
-						"          race_year = year,",
-						"          round,",
-						"          circuit_Id = circuitId,",
-						"          name,",
-						"          date,",
-						"          time",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> SelectngAndRenamingColumn",
-						"cast1 derive(race_timestamp = toTimestamp(concat(toString(date, 'yyyy-MM-dd'), ' ', toString(time, 'HH:mm:ss')), 'yyyy-MM-dd HH:mm:ss'),",
-						"          ingestion_date = currentTimestamp()) ~> derivedColumn1",
-						"SelectngAndRenamingColumn cast(output(",
-						"          date as date 'yyyy-MM-dd'",
-						"     ),",
-						"     errors: true) ~> cast1",
-						"derivedColumn1 sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     umask: 0022,",
-						"     preCommands: [],",
-						"     postCommands: [],",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     partitionBy('key',",
-						"          0,",
-						"          race_year",
-						"     )) ~> sink1"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/raceDataSet')]",
-				"[concat(variables('factoryId'), '/datasets/raceDatasetSink')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/ConstructorDataFlow')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1097,129 +1389,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ConstructorsDataset')]",
 				"[concat(variables('factoryId'), '/datasets/Constructorsink')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ConstructorsDataset')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "dbo.constructors",
-						"fileSystem": "rowdata"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "constructorId",
-						"type": "String"
-					},
-					{
-						"name": "constructorRef",
-						"type": "String"
-					},
-					{
-						"name": "name",
-						"type": "String"
-					},
-					{
-						"name": "nationality",
-						"type": "String"
-					},
-					{
-						"name": "url",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Constructorsink')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"folderPath": "Constructor",
-						"fileSystem": "stage1"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ConstructorPipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "ConstructorDataFlow",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "ConstructorDataFlow",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/ConstructorDataFlow')]"
 			]
 		},
 		{
@@ -1315,145 +1484,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DriversDataSet')]",
 				"[concat(variables('factoryId'), '/datasets/DriversSink')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DriversDataSet')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "dbo.drivers",
-						"fileSystem": "rowdata"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "driverId",
-						"type": "String"
-					},
-					{
-						"name": "driverRef",
-						"type": "String"
-					},
-					{
-						"name": "number",
-						"type": "String"
-					},
-					{
-						"name": "code",
-						"type": "String"
-					},
-					{
-						"name": "forename",
-						"type": "String"
-					},
-					{
-						"name": "surname",
-						"type": "String"
-					},
-					{
-						"name": "dob",
-						"type": "String"
-					},
-					{
-						"name": "nationality",
-						"type": "String"
-					},
-					{
-						"name": "url",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DriversSink')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"folderPath": "Drivers",
-						"fileSystem": "stage1"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DriverPipeline')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "DriverDataFlow",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DriverDataFlow",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {},
-									"sink1": {}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/DriverDataFlow')]"
 			]
 		},
 		{
@@ -1559,7 +1589,229 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ResultDataSet')]",
+			"name": "[concat(parameters('factoryName'), '/RaceDataFlow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "Stage1"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "raceDataSet",
+								"type": "DatasetReference"
+							},
+							"name": "Race"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "raceDatasetSink",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "SelectngAndRenamingColumn"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "cast1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          raceId as integer,",
+						"          year as integer,",
+						"          round as integer,",
+						"          circuitId as integer,",
+						"          name as string,",
+						"          date as string,",
+						"          time as string,",
+						"          url as string,",
+						"          fp1_date as string,",
+						"          fp1_time as string,",
+						"          fp2_date as string,",
+						"          fp2_time as string,",
+						"          fp3_date as string,",
+						"          fp3_time as string,",
+						"          quali_date as string,",
+						"          quali_time as string,",
+						"          sprint_date as string,",
+						"          sprint_time as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> Race",
+						"Race select(mapColumn(",
+						"          race_Id = raceId,",
+						"          race_year = year,",
+						"          round,",
+						"          circuit_Id = circuitId,",
+						"          name,",
+						"          date,",
+						"          time",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> SelectngAndRenamingColumn",
+						"cast1 derive(race_timestamp = toTimestamp(concat(toString(date, 'yyyy-MM-dd'), ' ', toString(time, 'HH:mm:ss')), 'yyyy-MM-dd HH:mm:ss'),",
+						"          ingestion_date = currentTimestamp()) ~> derivedColumn1",
+						"SelectngAndRenamingColumn cast(output(",
+						"          date as date 'yyyy-MM-dd'",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"derivedColumn1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('key',",
+						"          0,",
+						"          race_year",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/raceDataSet')]",
+				"[concat(variables('factoryId'), '/datasets/raceDatasetSink')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Qualifying_Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".csv"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "QualifyingDataSet",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "QualifyingSink",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/QualifyingDataSet')]",
+				"[concat(variables('factoryId'), '/datasets/QualifyingSink')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/QualifyingDataSet')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "SqlServer1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "qualifyId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "raceId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "driverId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "constructorId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "number",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "position",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "qualifying"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/SqlServer1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/QualifyingSink')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -1572,7 +1824,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "dbo.results",
 						"fileSystem": "rowdata"
 					},
 					"columnDelimiter": ",",
@@ -1582,106 +1833,42 @@
 				},
 				"schema": [
 					{
-						"name": "resultId",
+						"name": "circuitId",
 						"type": "String"
 					},
 					{
-						"name": "raceId",
+						"name": "circuitRef",
 						"type": "String"
 					},
 					{
-						"name": "driverId",
+						"name": "name",
 						"type": "String"
 					},
 					{
-						"name": "constructorId",
+						"name": "location",
 						"type": "String"
 					},
 					{
-						"name": "number",
+						"name": "country",
 						"type": "String"
 					},
 					{
-						"name": "grid",
+						"name": "lat",
 						"type": "String"
 					},
 					{
-						"name": "position",
+						"name": "lng",
 						"type": "String"
 					},
 					{
-						"name": "positionText",
+						"name": "alt",
 						"type": "String"
 					},
 					{
-						"name": "positionOrder",
-						"type": "String"
-					},
-					{
-						"name": "points",
-						"type": "String"
-					},
-					{
-						"name": "laps",
-						"type": "String"
-					},
-					{
-						"name": "time",
-						"type": "String"
-					},
-					{
-						"name": "milliseconds",
-						"type": "String"
-					},
-					{
-						"name": "fastestLap",
-						"type": "String"
-					},
-					{
-						"name": "rank",
-						"type": "String"
-					},
-					{
-						"name": "fastestLapTime",
-						"type": "String"
-					},
-					{
-						"name": "fastestLapSpeed",
-						"type": "String"
-					},
-					{
-						"name": "statusId",
+						"name": "url",
 						"type": "String"
 					}
 				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ResultsSink')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStorage1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"folderPath": "Results",
-						"fileSystem": "stage1"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
