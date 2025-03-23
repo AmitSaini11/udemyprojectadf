@@ -1,5 +1,5 @@
 {
-	"name": "Qualifyingataflow",
+	"name": "Qualifyingdataflow",
 	"properties": {
 		"folder": {
 			"name": "Stage1"
@@ -34,12 +34,15 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          qualifyId as string,",
-				"          raceId as string,",
-				"          driverId as string,",
-				"          constructorId as string,",
-				"          number as string,",
-				"          position as string",
+				"          qualifyId as short,",
+				"          raceId as short,",
+				"          driverId as short,",
+				"          constructorId as short,",
+				"          number as short,",
+				"          position as short,",
+				"          q1 as string,",
+				"          q2 as string,",
+				"          q3 as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -50,7 +53,10 @@
 				"          driver_id = driverId,",
 				"          constructor_id = constructorId,",
 				"          number,",
-				"          position",
+				"          position,",
+				"          q1,",
+				"          q2,",
+				"          q3",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
